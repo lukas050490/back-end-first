@@ -5,6 +5,17 @@ const port = 3000
 app.use(express.json())
 
 const users = []
+const middlewareUserId = ( request, response, next) =>{
+    const { id } = request.params
+    const index = users.findIndex(user => user.id === id)
+    if (index < 0) {
+        return response.status(404).json({ message: " user not found" })
+    }
+    request.userIndex = index
+    request.userId = id
+
+   next()
+}
 
 app.get('/users', (request, response) => {
 
@@ -19,26 +30,20 @@ app.post('/users', (request, response) => {
 
 })
 
-app.put('/users/:id', (request, response) => {
+app.put('/users/:id',middlewareUserId, (request, response) => {
 
-    const { id } = request.params
+    const index =  request.userIndex
+   const id = request.userId 
     const { name, age } = request.body
     const updateuser = { id, name, age }
-    const index = users.findIndex(user => user.id === id)
-    if (index < 0) {
-        return response.status(404).json({ message: " user not found" })
-    }
     users[index] = updateuser
     return response.json(updateuser)
 
 })
-app.delete('/users/:id', (request, response) => {
 
-    const { id } = request.params
-    const index = users.findIndex(user => user.id === id)
-    if (index < 0) {
-        return response.status(404).json({ message: " user not found" })
-    }
+app.delete('/users/:id',middlewareUserId, (request, response) => {
+
+    const index =  request.userIndex
     users.splice(index,1)
 
 
