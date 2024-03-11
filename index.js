@@ -1,20 +1,20 @@
-import cors from 'cors'
-import express from 'express'
-import { v4 } from 'uuid'
+const cors = require ('cors')
+const express = require ('express')
+const uuid = require ('uuid')
 const app = express()
-const port = 3001;
+const port = 3001
 app.use(express.json())
 app.use(cors())
 
 const users = []
 const middlewareUserId = ( request, response, next) =>{
-    const { id } = request.params;
-    const index = users.findIndex(user => user.id === id);
+    const { id } = request.params
+    const index = users.findIndex(user => user.id === id)
     if (index < 0) {
         return response.status(404).json({ message: " user not found" })
     }
-    request.userIndex = index;
-    request.userId = id;
+    request.userIndex = index
+    request.userId = id
 
    next();
 }
